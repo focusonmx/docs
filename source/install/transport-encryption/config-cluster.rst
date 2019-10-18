@@ -34,7 +34,7 @@ Preparations
 
 - Connect to each Mattermost server with a sudo or root user
 - Make a note of the IP from each cluster member used for the internal communication
-- Ensure `AllowTcpForwarding` is enabled in `/etc/ssh/sshd_config` of each cluster node
+- Ensure ``AllowTcpForwarding`` is enabled in ``/etc/ssh/sshd_config`` of each cluster node
 
 SSH Authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,9 +56,9 @@ SHA256:redacted mattermost@transport-encryption-mattermost1
 The location of the SSH key itself is irrelevant if company policies require
 the usage of another storage location.
 
-Next, ensure that the SSH public key of each node is added to `authorized_keys`
-file of the other nodes of the cluster. To do so, copy the contents of `/home/mattermost/.ssh/id_rsa.pub`
-of node 2 and 3, and add it to `/home/mattermost/.ssh/authorized_keys` of node 1.
+Next, ensure that the SSH public key of each node is added to ``authorized_keys``
+file of the other nodes of the cluster. To do so, copy the contents of ``/home/mattermost/.ssh/id_rsa.pub``
+of node 2 and 3, and add it to ``/home/mattermost/.ssh/authorized_keys`` of node 1.
 
 Repeat this step for each node of the cluster. As a result, each node should be
 able to establish an SSH connection to the other nodes of the cluster.
@@ -77,7 +77,7 @@ As a next step, allow SSH access from each of the other member nodes, e.g.:
 - mattermost2 allows from mattermost1 and mattermost3
 - mattermost3 allows from mattermost1 and mattermost2
 
-To do so, we add an exception in the firewall. The commands for mattermost1 look as
+To do so, we add an exception in the firewall. The commands for ``mattermost1`` look as
 follows:
 ```
 $ sudo ufw allow from 10.10.250.231/32 to any port ssh
@@ -96,9 +96,9 @@ To                         Action      From
 ```
 
 Repeat the same steps on the other nodes, but replacing the IPs with the ones from the
-other member nodes. Do so for each membernode, excluding the node itself.
+other member nodes. Do so for each member node, excluding the node itself.
 
-As a next step, open `/etc/ufw/after.rules` and add the following block to the
+As a next step, open ``/etc/ufw/after.rules`` and add the following block to the
 bottom of the file:
 
 ```
@@ -126,8 +126,8 @@ Two lines always belong to a single node, so in a deployment with 4 nodes:
 -A OUTPUT -p tcp -d ip_node_4 --dport 8074 -j DNAT --to-destination 127.0.0.1:38074
 ```
 
-Please be aware that the ports on the right side must be unique, so if having a cluster of
-6 nodes use 8075 and 8074 with 1 to 5 in front of it. If the cluster is of bigger size additional
+Please be aware that the ports on the right side must be unique, so if you have a cluster of
+6 nodes, use 8075 and 8074 with 1 to 5 in front of it. If the cluster is of bigger size, additional
 ports must be used.
 
 Ensure that your operating system has IP forwarding enabled using the following command:
@@ -165,7 +165,7 @@ SSH Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As a next step, we will ensure that the SSH tunnels are created as part of the Mattermost service
-start. To do so, create a file called `pre_start.sh` in `/opt/mattermost/bin` on `mattermost1`:
+start. To do so, create a file called ``pre_start.sh`` in ``/opt/mattermost/bin`` on ``mattermost1``:
 ```
 #!/bin/bash
 ssh -N -f -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -L 18075:10.10.250.231:8075 10.10.250.231 || true
@@ -184,8 +184,8 @@ Afterwards, we set the executable bit on the shell script:
 $ chmod +x /opt/mattermost/bin/pre_start.sh
 ```
 
-Open the systemd unit file of Mattermost and search for `Type=Notify`, after it enter
-a `ExecStartPre` script that will be executed before Mattermost itself is started:
+Open the systemd unit file of Mattermost and search for ``Type=Notify``, after it enter
+a ``ExecStartPre`` script that will be executed before Mattermost itself is started:
 ```
 [Service]
 Type=notify
